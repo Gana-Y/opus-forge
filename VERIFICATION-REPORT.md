@@ -6,7 +6,7 @@ This document provides the mandatory compliance, parity, and name-sanitization a
 
 - **Total Folders:** 170
 - **Total Files:** 1734
-- **Total Lines of Text & Code:** 365,405
+- **Total Lines of Text & Code:** 366,146
 
 ### File Types Breakdown
 
