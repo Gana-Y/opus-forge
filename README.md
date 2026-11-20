@@ -10,40 +10,65 @@
 
 ---
 
+## Visual Showcase
+
+### 1. The Design Engineering Suite
+![OpusForge Banner](assets/github_banner.png)
+
+### 2. Autonomous Pipeline Execution
+![OpusForge Pipeline Execution](assets/pipeline_showcase.gif)
+
+---
+
 ## Table of Contents
 1. [The Problem with Current AI Design Repositories](#the-problem-with-current-ai-design-repositories)
-2. [How to Install OpusForge in Your Workspace](#how-to-install-opusforge-in-your-workspace)
-   - [Method A: Add to an Existing Coding Project](#method-a-add-to-an-existing-coding-project-react-nextjs-vite)
-   - [Method B: Install Globally into AI Agents](#method-b-install-globally-into-ai-agents-antigravity-claude-cursor)
-3. [The "What to Type" Prompt Cookbook](#the-what-to-type-prompt-cookbook)
+2. [What is OpusForge?](#what-is-opusforge)
+3. [How to Install OpusForge in Your Workspace](#how-to-install-opusforge-in-your-workspace)
+   - [Method A: Add to an Existing Coding Project (React, Next.js, Vite)](#method-a-add-to-an-existing-coding-project-react-nextjs-vite)
+   - [Method B: Install Globally into AI Agents (Antigravity, Claude, Cursor)](#method-b-install-globally-into-ai-agents-antigravity-claude-cursor)
+4. [The "What to Type" Prompt Cookbook](#the-what-to-type-prompt-cookbook)
    - [Scenario 1: Build a Whole Website from a Figma Link](#scenario-1-build-a-whole-website-from-a-figma-link)
-   - [Scenario 2: Clean Up an Ugly / Generic AI Project](#scenario-2-clean-up-an-ugly--generic-ai-project-de-slop)
+   - [Scenario 2: Clean Up an Ugly / Generic AI Project (De-Slop)](#scenario-2-clean-up-an-ugly--generic-ai-project-de-slop)
    - [Scenario 3: Animate a Single Component (Button, Modal, Sheet)](#scenario-3-animate-a-single-component-button-modal-sheet)
    - [Scenario 4: Harden an Existing Component Against Edge Cases](#scenario-4-harden-an-existing-component-against-edge-cases)
    - [Scenario 5: Write Punchy Copy & Fix Section Spacing](#scenario-5-write-punchy-copy--fix-section-spacing)
-4. [Exhaustive Skills & Disciplines Directory](#exhaustive-skills--disciplines-directory)
+5. [Exhaustive Skills & Disciplines Directory](#exhaustive-skills--disciplines-directory)
    - [Master Autonomous Pipeline](#1-master-autonomous-pipeline)
    - [Figma Token Intake](#2-figma-token-intake)
    - [Kinetic Motion Physics (All 20 Skills)](#3-kinetic-motion-physics-all-20-skills)
    - [Structural Rigor & UX Architecture](#4-structural-rigor--ux-architecture)
    - [Editorial Cadence & Layout Rhythm](#5-editorial-cadence--layout-rhythm)
    - [Aesthetic Sanitization & De-Templating](#6-aesthetic-sanitization--de-templating)
-5. [Step-by-Step Walkthroughs](#step-by-step-walkthroughs)
+6. [Step-by-Step Walkthroughs](#step-by-step-walkthroughs)
    - [How to Use for a Single Component](#how-to-use-opusforge-for-a-single-component)
    - [How to Use for a Complete Website](#how-to-use-opusforge-for-a-complete-website)
-6. [Repository Architecture](#repository-architecture)
-7. [Credits & Attribution](#credits--upstream-attribution)
+7. [Repository Architecture](#repository-architecture)
+8. [Credits & Attribution](#credits--upstream-attribution)
 
 ---
 
 ## The Problem with Current AI Design Repositories
 
-When you clone the individual repositories floating around GitHub, you hit a brick wall:
+When you clone the individual design engineering repositories floating around GitHub, you hit a brick wall:
 - **No integration guide:** They dump loose markdown files without explaining where to put them or how an AI reads them.
 - **No command cookbook:** You are left guessing what phrase to type into your chat prompt to actually trigger the behavior.
 - **Fragmented workflows:** You have to manually hop between one repo for animations, another for copywriting, another for layouts, and another for edge cases.
 
 **OpusForge solves this completely.** It unifies all disciplines into ONE cohesive architecture, provides an autonomous 6-stage master pipeline for full builds, and gives you an explicit copy-paste prompt cookbook for every standalone component task.
+
+---
+
+## What is OpusForge?
+
+Most AI-generated websites suffer from the exact same failure modes: purple gradient blobs, unreadable glassmorphism, generic centered three-column cards, floating emoji badges ("New ✨"), sluggish CSS transitions, broken layout shifts (CLS), and empty copywriting loaded with corporate buzzwords ("supercharge your workflow").
+
+**OpusForge** is an integrated AI design engineering suite and autonomous build pipeline that replaces cookie-cutter AI output with bespoke, senior-level digital craft. It unifies:
+
+1. **Figma Conduit (MCP):** Live token harvesting, container dimension inspection, and prototype spring curve extraction without manual copy-pasting.
+2. **Structural Rigor:** UX topology, surface mode selection (Workspace, Editorial, Reading), and defensive edge-case hardening.
+3. **Editorial Cadence:** High-conviction typography, the strict "one section per screen" rule (1440x900), and punchy, human copywriting.
+4. **Kinetic Physics:** Interruptible 60fps/120fps spring dynamics, tactile click depth, rubber-banding gesture manipulation, and strict compositor layer budgets.
+5. **Aesthetic Sanitization:** Comprehensive de-templating rules that eradicate amateur AI signatures and restore authentic human design direction.
 
 ---
 
@@ -71,7 +96,7 @@ Your assistant now has immediate access to all 35+ disciplines, references, toke
 Copy or link OpusForge into your Antigravity skills directory:
 ```powershell
 # Windows
-Copy-Item -Recurse "opus-forge\disciplines\*" "$HOME\.gemini\config\skills"
+Copy-Item -Recurse "opus-forge\disciplines\*" "$HOME\.gemini\config\skills\"
 
 # macOS / Linux
 cp -r opus-forge/disciplines/* ~/.gemini/config/skills/
@@ -171,7 +196,7 @@ Every discipline in OpusForge is categorized below with its exact purpose and in
 | Discipline | Description | Exact Copy-Paste Prompt |
 |:---|:---|:---|
 | **`token-intake`** | Extracts live tokens, frames, and motion curves via Figma MCP. | `Run token-intake on <FIGMA_FRAME_URL>` |
-| **`token-harvest`** | Mins hardcoded hex colors and spacing classes from existing code. | `Run token-harvest across src/ and compile tokens.css` |
+| **`token-harvest`** | Mines hardcoded hex colors and spacing classes from existing code. | `Run token-harvest across src/ and compile tokens.css` |
 
 ---
 
@@ -295,6 +320,8 @@ opus-forge/
 ├── progress.md                        # Transparent transformation log and verification checks
 ├── VERIFICATION-REPORT.md             # Certified 0-hit sanitization & parity audit
 ├── assets/                            # Architecture diagrams, screenshots, and visual assets
+│   ├── github_banner.png              # Clean flagship horizontal banner
+│   └── pipeline_showcase.gif          # Framed 60fps architecture pipeline showcase
 └── disciplines/
     ├── opus-pipeline/                 # Sovereign 6-Stage Master Build Engine (SKILL.md)
     ├── figma-conduit/                 # Live token extraction & frame inspection (SETUP.md)

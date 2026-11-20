@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpusForge Kinetic Banner</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #050608;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: #fff;
+      overflow: hidden;
+    }
+    .banner-container {
+      position: relative;
+      width: 1200px;
+      height: 450px;
+      background: #08090d;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 100px rgba(217, 119, 6, 0.05);
+    }
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+    }
+    .controls {
+      margin-top: 16px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      font-size: 13px;
+      color: #888;
+    }
+    .btn {
+      background: #14161f;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ccc;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+    .btn:hover {
+      background: #1e2230;
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: #f59e0b;
+      color: #000;
+      font-weight: 600;
+      border-color: #f59e0b;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="banner-container">
+    <canvas id="bannerCanvas" width="1200" height="450"></canvas>
+  </div>
+
+  <div class="controls">
+    <span>Interactive Controls: Drag cables or click nodes</span>
+    <button class="btn active" onclick="setCycle(0)">1. Structural Rigor</button>
+    <button class="btn" onclick="setCycle(1)">2. Kinetic Physics</button>
+    <button class="btn" onclick="setCycle(2)">3. Editorial Cadence</button>
+    <button class="btn" onclick="setCycle(3)">4. Aesthetic Sanitizer</button>
+    <button class="btn" onclick="setCycle(4)">5. OPUSFORGE</button>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('bannerCanvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width;
+    const H = canvas.height;
+
+    const cycles = [
+      {
+        title: "STRUCTURAL RIGOR",
+        subtitle: "UX TOPOLOGY · SURFACE MODES · DEFENSIVE HARDENING",
+        tag: "DISCIPLINE 01",
+        accent: "#38bdf8", // cyan
+        accentRgb: "56, 189, 248"
+      },
+      {
+        title: "KINETIC PHYSICS",
+        subtitle: "FLUID SPRING DYNAMICS · TACTILE CLICK DEPTH · 60FPS COMPOSITOR",
+        tag: "DISCIPLINE 02",
+        accent: "#f59e0b", // amber
+        accentRgb: "245, 158, 11"
+      },
+      {
+        title: "EDITORIAL CADENCE",
+        subtitle: "ANTI-SLOP SECTION RHYTHM · PUNCHY ZERO-BUZZWORD PROSE",
+        tag: "DISCIPLINE 03",
+        accent: "#10b981", // emerald
+        accentRgb: "16, 185, 129"
+      },
+      {
+        title: "AESTHETIC SANITIZER",
+        subtitle: "DE-TEMPLATING · PURGING GENERIC AI TELLS & PURPLE GLOWS",
+        tag: "DISCIPLINE 04",
+        accent: "#ec4899", // rose
+        accentRgb: "236, 72, 153"
+      },
+      {
+        title: "OPUSFORGE",
+        subtitle: "THE SOVEREIGN FULL-STACK AI DESIGN ENGINEERING ENGINE",
+        tag: "MASTER ARCHITECTURE",
+        accent: "#fbbf24", // gold
+        accentRgb: "251, 191, 36"
+      }
+    ];
+
+    let currentCycle = 0;
+    let cycleTimer = 0;
+    const CYCLE_DURATION = 180; // 3 seconds at 60fps
+    let textAlpha = 1;
+    let textScale = 1;
+
+    // Cable tension physics
+    let cableY = H / 2;
+    let cableVelocity = 0;
+    const cableTargetY = H / 2;
+    const tensionK = 0.08;
+    const damping = 0.88;
+
+    let mouseX = -1000;
+    let mouseY = -1000;
+    let isMouseDown = false;
+
+    // Shockwave ripples
+    const shockwaves = [];
+
+    // Structural Diamond Lattice Nodes
+    const nodes = [];
+    const numPoints = 16;
+    for (let i = 0; i <= numPoints; i++) {
+      nodes.push({
+        x: (W / numPoints) * i,
+        y: H / 2,
+        baseX: (W / numPoints) * i,
+        baseY: H / 2,
+        vy: 0
+      });
+    }
+
+    // Interactive events
+    canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      mouseX = (e.clientX - rect.left) * (W / rect.width);
+      mouseY = (e.clientY - rect.top) * (H / rect.height);
+      
+      // Pull nodes close to cursor
+      nodes.forEach(n => {
+        const dx = mouseX - n.x;
+        const dy = mouseY - n.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist < 120) {
+          const force = (1 - dist / 120) * 12;
+          n.vy += (mouseY > n.y ? force : -force) * 0.4;
+        }
+      });
+    });
+
+    canvas.addEventListener('mousedown', (e) => {
+      isMouseDown = true;
+      const rect = canvas.getBoundingClientRect();
+      const clickX = (e.clientX - rect.left) * (W / rect.width);
+      const clickY = (e.clientY - rect.top) * (H / rect.height);
+      shockwaves.push({ x: clickX, y: clickY, radius: 0, alpha: 1 });
+      
+      // Step to next cycle on click
+      currentCycle = (currentCycle + 1) % cycles.length;
+      cycleTimer = 0;
+      updateButtons();
+    });
+
+    canvas.addEventListener('mouseup', () => isMouseDown = false);
+    canvas.addEventListener('mouseleave', () => {
+      mouseX = -1000;
+      mouseY = -1000;
+    });
+
+    window.setCycle = function(idx) {
+      currentCycle = idx;
+      cycleTimer = 0;
+      updateButtons();
+    };
+
+    function updateButtons() {
+      const btns = document.querySelectorAll('.btn');
+      btns.forEach((b, i) => {
+        b.classList.toggle('active', i === currentCycle);
+      });
+    }
+
+    // Grid coordinates background
+    function drawGrid() {
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.025)";
+      ctx.lineWidth = 1;
+
+      const gridSize = 40;
+      for (let x = 0; x < W; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, H);
+        ctx.stroke();
+      }
+      for (let y = 0; y < H; y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(W, y);
+        ctx.stroke();
+      }
+
+      // Corner technical markers
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
+      ctx.beginPath();
+      // Top left
+      ctx.moveTo(20, 30); ctx.lineTo(20, 20); ctx.lineTo(30, 20);
+      // Top right
+      ctx.moveTo(W - 30, 20); ctx.lineTo(W - 20, 20); ctx.lineTo(W - 20, 30);
+      // Bottom left
+      ctx.moveTo(20, H - 30); ctx.lineTo(20, H - 20); ctx.lineTo(30, H - 20);
+      // Bottom right
+      ctx.moveTo(W - 30, H - 20); ctx.lineTo(W - 20, H - 20); ctx.lineTo(W - 20, H - 30);
+      ctx.stroke();
+
+      ctx.fillStyle = "rgba(255, 255, 255, 0.25)";
+      ctx.font = "10px monospace";
+      ctx.fillText("OPUS_SYS::REV_2026.1", 36, 26);
+      ctx.fillText("60FPS_COMPOSITE", W - 140, 26);
+    }
+
+    function drawLattice(c) {
+      // Update spring physics on nodes
+      nodes.forEach((n, i) => {
+        if (i === 0 || i === nodes.length - 1) return; // pinned ends
+        const dy = n.baseY - n.y;
+        n.vy += dy * tensionK;
+        n.vy *= damping;
+        n.y += n.vy;
+      });
+
+      // Draw Main Horizontal Tension Cord
+      ctx.strokeStyle = `rgba(${c.accentRgb}, 0.8)`;
+      ctx.lineWidth = 2.5;
+      ctx.shadowColor = `rgba(${c.accentRgb}, 0.6)`;
+      ctx.shadowBlur = 12;
+
+      ctx.beginPath();
+      ctx.moveTo(nodes[0].x, nodes[0].y);
+      for (let i = 1; i < nodes.length; i++) {
+        const xc = (nodes[i].x + nodes[i - 1].x) / 2;
+        const yc = (nodes[i].y + nodes[i - 1].y) / 2;
+        ctx.quadraticCurveTo(nodes[i - 1].x, nodes[i - 1].y, xc, yc);
+      }
+      ctx.lineTo(nodes[nodes.length - 1].x, nodes[nodes.length - 1].y);
+      ctx.stroke();
+      ctx.shadowBlur = 0; // reset glow
+
+      // Draw Diamond Lattice (Upper & Lower Struts)
+      const midIdx = Math.floor(nodes.length / 2);
+      const midNode = nodes[midIdx];
+
+      ctx.strokeStyle = `rgba(255, 255, 255, 0.12)`;
+      ctx.lineWidth = 1;
+
+      // Top vertex of diamond
+      const topVertex = { x: W / 2, y: midNode.y - 120 };
+      const botVertex = { x: W / 2, y: midNode.y + 120 };
+
+      // Connect nodes to top & bottom vertices
+      for (let i = 3; i <= nodes.length - 4; i++) {
+        const n = nodes[i];
+        ctx.beginPath();
+        ctx.moveTo(n.x, n.y);
+        ctx.lineTo(topVertex.x, topVertex.y);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(n.x, n.y);
+        ctx.lineTo(botVertex.x, botVertex.y);
+        ctx.stroke();
+      }
+
+      // Outer diamond perimeter
+      ctx.strokeStyle = `rgba(${c.accentRgb}, 0.45)`;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(nodes[3].x, nodes[3].y);
+      ctx.lineTo(topVertex.x, topVertex.y);
+      ctx.lineTo(nodes[nodes.length - 4].x, nodes[nodes.length - 4].y);
+      ctx.lineTo(botVertex.x, botVertex.y);
+      ctx.closePath();
+      ctx.stroke();
+
+      // Draw vertex luminous nodes
+      [topVertex, botVertex].forEach(v => {
+        ctx.fillStyle = c.accent;
+        ctx.shadowColor = c.accent;
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.arc(v.x, v.y, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      });
+
+      // Mechanical Crawler / Assembler Head on the cable
+      const crawlerX = (W / 2) + Math.sin(Date.now() * 0.002) * 160;
+      const crawlerY = midNode.y + Math.cos(Date.now() * 0.003) * 6;
+
+      ctx.save();
+      ctx.translate(crawlerX, crawlerY);
+      
+      // Crawler metallic chassis
+      ctx.fillStyle = "#1e2230";
+      ctx.strokeStyle = c.accent;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(0, 0, 9, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Core LED lens
+      ctx.fillStyle = "#ffffff";
+      ctx.shadowColor = c.accent;
+      ctx.shadowBlur = 14;
+      ctx.beginPath();
+      ctx.arc(0, 0, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      // Small mechanical legs
+      ctx.strokeStyle = `rgba(255, 255, 255, 0.4)`;
+      ctx.lineWidth = 1;
+      for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 3) {
+        const lx = Math.cos(angle + Date.now() * 0.004) * 16;
+        const ly = Math.sin(angle + Date.now() * 0.004) * 16;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(lx, ly);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function drawTypography(c) {
+      ctx.save();
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      const centerY = H / 2;
+
+      // Tag badge
+      ctx.fillStyle = c.accent;
+      ctx.font = "600 11px monospace";
+      ctx.letterSpacing = "2px";
+      ctx.fillText(`[ ${c.tag} ]`, W / 2, centerY - 62);
+
+      // Main Title
+      ctx.font = "900 48px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+      ctx.letterSpacing = "6px";
+      
+      // Subtle 3D extrusion shadow
+      ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+      ctx.fillText(c.title, W / 2 + 2, centerY - 8 + 3);
+
+      // Main letter face
+      ctx.fillStyle = "#ffffff";
+      ctx.shadowColor = `rgba(${c.accentRgb}, 0.5)`;
+      ctx.shadowBlur = 24;
+      ctx.fillText(c.title, W / 2, centerY - 8);
+      ctx.shadowBlur = 0;
+
+      // Subtitle
+      ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
+      ctx.font = "500 12px monospace";
+      ctx.letterSpacing = "3px";
+      ctx.fillText(c.subtitle, W / 2, centerY + 54);
+
+      ctx.restore();
+    }
+
+    function drawShockwaves() {
+      for (let i = shockwaves.length - 1; i >= 0; i--) {
+        const sw = shockwaves[i];
+        sw.radius += 5;
+        sw.alpha -= 0.02;
+
+        if (sw.alpha <= 0) {
+          shockwaves.splice(i, 1);
+          continue;
+        }
+
+        ctx.strokeStyle = `rgba(255, 255, 255, ${sw.alpha * 0.5})`;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(sw.x, sw.y, sw.radius, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    }
+
+    // Main animation loop
+    function loop() {
+      ctx.clearRect(0, 0, W, H);
+
+      // Background ambient gradient
+      const c = cycles[currentCycle];
+      const bgGrad = ctx.createRadialGradient(W / 2, H / 2, 50, W / 2, H / 2, 550);
+      bgGrad.addColorStop(0, `rgba(${c.accentRgb}, 0.08)`);
+      bgGrad.addColorStop(0.6, "rgba(8, 9, 13, 0.8)");
+      bgGrad.addColorStop(1, "#050608");
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      drawGrid();
+      drawLattice(c);
+      drawShockwaves();
+      drawTypography(c);
+
+      // Automatic cycling timer
+      cycleTimer++;
+      if (cycleTimer >= CYCLE_DURATION) {
+        cycleTimer = 0;
+        currentCycle = (currentCycle + 1) % cycles.length;
+        updateButtons();
+      }
+
+      requestAnimationFrame(loop);
+    }
+
+    loop();
+  </script>
+</body>
+</html>
