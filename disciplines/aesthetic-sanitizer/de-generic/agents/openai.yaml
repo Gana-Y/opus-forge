@@ -1,0 +1,4 @@
+interface:
+  display_name: "de-generic"
+  short_description: "Turn vibecoded, AI-looking UI into a designed interface"
+  default_prompt: "Use $de-generic on this screen so it stops looking AI-generated."
